@@ -15,6 +15,7 @@ class Proveedor extends Model
         'nombre_completo',
         'tipo_documento',
         'numero_documento',
+        'email',
         'telefono',
         'direccion',
         'municipio',

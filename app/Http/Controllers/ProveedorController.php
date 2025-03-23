@@ -31,11 +31,10 @@ class ProveedorController extends Controller
     }
 
     // Actualizar un proveedor existente
-    public function update(UpdateProveedorRequest $request, $id): JsonResponse
+    public function update(UpdateProveedorRequest $request, Proveedor $proveedore)
     {
-        $proveedor = Proveedor::findOrFail($id);
-        $proveedor->update($request->validated());
-        return response()->json($proveedor);
+        $proveedore->update($request->validated());
+        return response()->json($proveedore);
     }
 
     // Eliminar un proveedor (soft delete)

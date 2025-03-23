@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateClienteRequest extends FormRequest
 {
@@ -22,7 +23,12 @@ class UpdateClienteRequest extends FormRequest
         return [
             'nombre_completo' => 'required|string|max:150',
             'tipo_documento' => 'required|string|max:20',
-            'numero_documento' => 'required|string|max:30|unique:clientes,numero_documento,' . $this->route('cliente')->id,
+            'numero_documento' => [
+                'required',
+                'string',
+                'max:30',
+                Rule::unique('clientes', 'numero_documento')->ignore($this->route('cliente')->id)
+            ],
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string|max:255',
             'vereda' => 'nullable|string|max:100',

@@ -17,6 +17,7 @@ class StoreProveedorRequest extends FormRequest
             'nombre_completo'     => 'required|string|max:150',
             'tipo_documento'      => 'required|string|max:20',
             'numero_documento'    => 'required|string|max:30|unique:proveedores,numero_documento',
+            'email'               => 'nullable|string|max:50',
             'telefono'            => 'nullable|string|max:20',
             'direccion'           => 'nullable|string|max:255',
             'municipio'           => 'nullable|string|max:100',
