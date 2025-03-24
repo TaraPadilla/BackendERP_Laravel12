@@ -6,18 +6,32 @@ use App\Models\Producto;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductoRequest;
 use App\Http\Requests\UpdateProductoRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
+
 
 class ProductoController extends Controller
 {
     public function index()
     {
+        Log::info('inicia index producto');
         return Producto::with(['categoria', 'proveedor'])->get();
     }
 
     public function store(StoreProductoRequest $request)
     {
+        $start = microtime(true);
+        Log::info('inicia producto');
         $producto = Producto::create($request->validated());
+        Log::info('Nuevo producto registrado', [
+            'cliente' => $producto->toArray(),
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+        $end = microtime(true);
+        Log::info('Tiempo de ejecución store: ' . round($end - $start, 4) . ' segundos');
         return response()->json($producto, 201);
+
     }
 
     public function show($id)
