@@ -20,6 +20,11 @@ Route::apiResource('pagos', PagoController::class);
 Route::apiResource('gastos', GastoController::class);
 Route::get('/kpi-dashboard', [DashboardController::class, 'kpi']);
 Route::get('/ganancias-diarias', [DashboardController::class, 'gananciasDiarias']);
+Route::get('/gastos-por-categoria', [DashboardController::class, 'gastosPorCategoria']);
+Route::get('/productos-rentables', [DashboardController::class, 'productosRentables']);
+Route::get('/ganancias-por-tipo', [DashboardController::class, 'gananciasPorTipo']);
+
+
 
 
 

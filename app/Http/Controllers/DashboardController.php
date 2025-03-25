@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Venta;
 use App\Models\Gasto;
+use Illuminate\Support\Facades\DB;
+use App\Models\Categoria;
+use App\Models\Producto;
 
 
 class DashboardController extends Controller
@@ -95,5 +98,76 @@ class DashboardController extends Controller
         })->values();
 
         return response()->json($resultado);
+    }
+
+    public function gastosPorCategoria(Request $request)
+    {
+        $from = $request->query('from');
+        $to = $request->query('to');
+
+        $query = Gasto::select('categorias.nombre as categoria', DB::raw('SUM(gastos.valor) as total'))
+            ->join('categorias', 'gastos.categoria_id', '=', 'categorias.id')
+            ->groupBy('categorias.nombre')
+            ->orderByDesc('total');
+
+        if ($from) $query->where('gastos.fecha_hora', '>=', $from);
+        if ($to)   $query->where('gastos.fecha_hora', '<=', $to);
+
+        $gastos = $query->get();
+
+        return response()->json($gastos);
+    }
+
+    public function productosRentables(Request $request)
+    {
+        $from = $request->query('from');
+        $to = $request->query('to');
+        $query = DB::table('detalle_venta')
+            ->join('productos', 'detalle_venta.producto_id', '=', 'productos.id')
+            ->join('ventas', 'detalle_venta.venta_id', '=', 'ventas.id')
+            ->select(
+                'productos.nombre',
+                DB::raw('SUM((detalle_venta.precio_venta - productos.precio_compra) * detalle_venta.cantidad) as ganancia_total')
+            )
+            ->groupBy('productos.nombre')
+            ->orderByDesc('ganancia_total')
+            ->limit(10);
+
+        if ($from) {
+            $query->where('ventas.fecha_venta', '>=', $from);
+        }
+
+        if ($to) {
+            $query->where('ventas.fecha_venta', '<=', $to);
+        }
+
+        $productos = $query->get();
+
+        return response()->json($productos);
+    }
+
+    public function gananciasPorTipo(Request $request)
+    {
+        $from = $request->query('from');
+        $to = $request->query('to');
+        $query = DB::table('detalle_venta')
+            ->join('productos', 'detalle_venta.producto_id', '=', 'productos.id')
+            ->join('ventas', 'detalle_venta.venta_id', '=', 'ventas.id')
+            ->select(
+                'ventas.tipo_pago',
+                DB::raw('SUM((detalle_venta.precio_venta - productos.precio_compra) * detalle_venta.cantidad) as ganancia')
+            )
+            ->groupBy('ventas.tipo_pago');
+
+        if ($from) {
+            $query->where('ventas.fecha_venta', '>=', $from);
+        }
+
+        if ($to) {
+            $query->where('ventas.fecha_venta', '<=', $to);
+        }
+
+        $resultados = $query->get();
+        return response()->json($resultados);
     }
 }
