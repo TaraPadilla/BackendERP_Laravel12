@@ -13,7 +13,10 @@ class VentaController extends Controller
 {
     public function index()
     {
-        $ventas = Venta::with(['cliente:id,nombre_completo', 'usuario:id,nombre'])->orderBy('id', 'desc')->get();
+        $ventas = Venta::with([
+            'cliente:id,nombre_completo',
+            'usuario:id,nombre',
+            'detalles.producto:id,nombre'])->orderBy('id', 'desc')->get();
         return response()->json($ventas);
     }
 
@@ -120,4 +123,16 @@ class VentaController extends Controller
 
         return response()->json(['message' => 'Venta anulada correctamente']);
     }
+
+    public function ventasPorCliente($id)
+    {
+        $ventas = Venta::with('cliente')
+            ->where('cliente_id', $id)
+            ->whereNull('deleted_at')
+            ->get();
+
+        return response()->json($ventas);
+    }
+
+
 }

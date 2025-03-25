@@ -44,4 +44,18 @@ class Venta extends Model
     {
         return $this->hasMany(Pago::class);
     }
+
+    public function aplicarAbono($monto)
+    {
+        if ($this->saldo_pendiente === null) return;
+
+        $this->saldo_pendiente -= $monto;
+
+        if ($this->saldo_pendiente < 0) {
+            throw new \Exception('El monto del pago excede el saldo pendiente.');
+        }
+
+        $this->save();
+    }
+
 }
